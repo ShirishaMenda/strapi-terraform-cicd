@@ -3,7 +3,7 @@ provider "aws" {
 }
 
 resource "aws_security_group" "strapi_sg" {
-  name = "strapi-sg"
+  name = "strapi-sgsiri"
 
   ingress {
     from_port   = 22
