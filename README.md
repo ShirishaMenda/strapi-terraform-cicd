@@ -1,3 +1,4 @@
+# To Automate Strapi Deployment with GitHub Actions & Terraform
 # Step 1:Create a Strapi Application
 
 npx create-strapi-app@latest strapi-app
