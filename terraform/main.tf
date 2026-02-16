@@ -30,7 +30,7 @@ resource "aws_security_group" "strapi_sg" {
 resource "aws_instance" "strapi" {
   ami                    = "ami-0b6c6ebed2801a5cb"
   instance_type          = "t2.micro"
-  key_name               = "siri-key"
+  key_name               = "strapi-key"
   vpc_security_group_ids = [aws_security_group.strapi_sg.id]
 
   user_data = templatefile("${path.module}/user_data.sh", {
