@@ -4,6 +4,6 @@ resource "tls_private_key" "strapi_key" {
 }
 
 resource "aws_key_pair" "strapi_key" {
-  key_name   = "strapi-key"
+  key_name   = "shirisha-key"
   public_key = tls_private_key.strapi_key.public_key_openssh
 }
