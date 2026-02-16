@@ -1,61 +1,130 @@
-# 🚀 Getting started with Strapi
+# Step 1:Create a Strapi Application
 
-Strapi comes with a full featured [Command Line Interface](https://docs.strapi.io/dev-docs/cli) (CLI) which lets you scaffold and manage your project in seconds.
+npx create-strapi-app@latest strapi-app
+cd strapi-app
 
-### `develop`
 
-Start your Strapi application with autoReload enabled. [Learn more](https://docs.strapi.io/dev-docs/cli#strapi-develop)
+# Step 2:Dockerize the Strapi App
+Create Dockerfile
 
-```
-npm run develop
-# or
-yarn develop
-```
+FROM node:18-alpine
 
-### `start`
+#Install dependencies required by node-gyp
+RUN apk add --no-cache \
+    python3 \
+    make \
+    g++ \
+    libc6-compat
 
-Start your Strapi application with autoReload disabled. [Learn more](https://docs.strapi.io/dev-docs/cli#strapi-start)
+WORKDIR /app
 
-```
-npm run start
-# or
-yarn start
-```
+COPY package*.json ./
 
-### `build`
+RUN npm install
 
-Build your admin panel. [Learn more](https://docs.strapi.io/dev-docs/cli#strapi-build)
+COPY . .
 
-```
-npm run build
-# or
-yarn build
-```
+RUN npm run build
 
-## ⚙️ Deployment
+EXPOSE 1337
 
-Strapi gives you many possible deployment options for your project including [Strapi Cloud](https://cloud.strapi.io). Browse the [deployment section of the documentation](https://docs.strapi.io/dev-docs/deployment) to find the best solution for your use case.
+CMD ["npm", "run", "start"]
 
-```
-yarn strapi deploy
-```
 
-## 📚 Learn more
 
-- [Resource center](https://strapi.io/resource-center) - Strapi resource center.
-- [Strapi documentation](https://docs.strapi.io) - Official Strapi documentation.
-- [Strapi tutorials](https://strapi.io/tutorials) - List of tutorials made by the core team and the community.
-- [Strapi blog](https://strapi.io/blog) - Official Strapi blog containing articles made by the Strapi team and the community.
-- [Changelog](https://strapi.io/changelog) - Find out about the Strapi product updates, new features and general improvements.
+# Step 3:Push Code to GitHub Repository
+git init
+git add .
+git commit -m "Initial Strapi app with Docker"
+git branch -M main
+git remote add origin <your-repo-url>
+git push -u origin main
 
-Feel free to check out the [Strapi GitHub repository](https://github.com/strapi/strapi). Your feedback and contributions are welcome!
 
-## ✨ Community
+# Step 4:Configure GitHub Secrets
 
-- [Discord](https://discord.strapi.io) - Come chat with the Strapi community including the core team.
-- [Forum](https://forum.strapi.io/) - Place to discuss, ask questions and find answers, show your Strapi project and get feedback or just talk with other Community members.
-- [Awesome Strapi](https://github.com/strapi/awesome-strapi) - A curated list of awesome things related to Strapi.
+In your GitHub repository → Settings → Secrets → Actions, add:
 
----
+Secret Name	Description
+AWS_ACCESS_KEY_ID	AWS access key
+AWS_SECRET_ACCESS_KEY	AWS secret key
+AWS_REGION	e.g. ap-south-1
+DOCKER_USERNAME	Docker Hub username
+DOCKER_PASSWORD	Docker Hub password
 
-<sub>🤫 Psst! [Strapi is hiring](https://strapi.io/careers).</sub>
+
+# Step 5:CI Pipeline – Build & Push Docker Image
+
+Create .github/workflows/ci.yml
+
+What this does:
+
+Triggers on push to main
+
+Builds Docker image
+
+Pushes image to Docker Hub
+
+Outputs image tag
+
+
+# Step 6:Terraform Setup for EC2
+Terraform will:
+
+Create EC2 instance
+
+Open ports 22 (SSH) and 1337 (Strapi)
+
+Install Docker
+
+Pull latest Strapi Docker image
+
+Run Strapi container
+
+Ensure Terraform files exist:
+
+terraform/
+ -main.tf
+ -variables.tf
+ -outputs.tf
+ 
+ 
+
+# Step 7:CD Pipeline – Terraform Deployment
+
+Create .github/workflows/terraform.yml
+
+What this does:
+
+Triggered manually (workflow_dispatch)
+
+Runs:
+
+terraform init
+
+terraform plan
+
+terraform apply
+
+Uses Docker image tag from CI
+
+Deploys container on EC2
+
+
+
+# Step 8:SSH Access to EC2 (Verification)
+
+After deployment:
+
+ssh -i your-key.pem ec2-user@<EC2_PUBLIC_IP>
+docker ps
+
+
+You should see the Strapi container running.
+
+
+# Step 9:Access Strapi Application
+
+Open browser:
+
+http://<EC2_PUBLIC_IP>:1337
