@@ -29,7 +29,7 @@ resource "aws_security_group" "strapi_sg" {
 
 resource "aws_instance" "strapi" {
   ami                    = "ami-0b6c6ebed2801a5cb"
-  instance_type          = "t2.micro"
+  instance_type          = "t3.micro"
   key_name               = "strapi-key"
   vpc_security_group_ids = [aws_security_group.strapi_sg.id]
 
