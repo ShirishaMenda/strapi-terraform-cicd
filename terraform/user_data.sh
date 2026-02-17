@@ -24,9 +24,4 @@ docker pull ${image}
 docker run -d \
   --name strapi \
   -p 1337:1337 \
-  -e NODE_ENV=production \
-  -e APP_KEYS="${app_keys}" \
-  -e API_TOKEN_SALT="${api_token_salt}" \
-  -e ADMIN_JWT_SECRET="${admin_jwt_secret}" \
-  -e JWT_SECRET="${jwt_secret}" \
   ${image}
